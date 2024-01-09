@@ -1,10 +1,10 @@
 import React from "react"
 import DemoA from "./views/DemoA"
+import styles from "./App.module.less"
 
 function App() {
 	return (
-		<div>
-			我是应用
+		<div className={styles.layout}>
 			<DemoA />
 		</div>
 	)

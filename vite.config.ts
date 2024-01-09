@@ -13,6 +13,7 @@ import { defineConfig } from "vite"
  */
 export default defineConfig((): UserConfig => {
 	return {
+		base: "/better-scrollbar/",
 		server: {
 			port: 3000,
 			cors: true,

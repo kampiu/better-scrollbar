@@ -1,18 +1,25 @@
-import React from "react"
+import React, { useMemo } from "react"
 import ScrollBars from "ScrollBar"
+import styles from "./index.module.less"
 
 function Index() {
 	
-	// const list = useMemo(() => {
-	// 	return Array.from({length: 100}, (v, i) => i)
-	// }, [])
+	const list = useMemo(() => {
+		return Array.from({length: 100}, (v, i) => i)
+	}, [])
 	
 	return (
-		<div style={ {width: 300, height: 300} }>
+		<div className={styles.container}>
 			<ScrollBars
 				autoHeight
-				autoHeightMax={ 100 }>
-				<div style={ {width: "100%", height: 50} }/>
+				autoHeightMax={ 500 }
+			>
+				{
+					list.map(item => (
+						<div key={item} className={styles.item}>{item}</div>
+					))
+				}
+			
 			</ScrollBars>
 		</div>
 	)
