@@ -1,7 +1,7 @@
 import react from "@vitejs/plugin-react"
-import { join, resolve } from "path"
+import { join } from "path"
 import type { UserConfig } from "vite"
-import { defineConfig, normalizePath } from "vite"
+import { defineConfig } from "vite"
 
 
 
@@ -21,6 +21,10 @@ export default defineConfig((): UserConfig => {
 			alias: [
 				{
 					find: "@",
+					replacement: join(__dirname, "site"),
+				},
+				{
+					find: "ScrollBar",
 					replacement: join(__dirname, "src"),
 				}
 			],

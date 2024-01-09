@@ -3,6 +3,7 @@ import ReactDOM from "react-dom"
 import App from "./App"
 
 function boostrap() {
+	// @ts-ignore
 	ReactDOM.render(<App/>, document.getElementById("root"))
 }
 

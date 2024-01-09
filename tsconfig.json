@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"baseUrl": "./",
+		"baseUrl": "./src",
 		"jsx": "react",
 		"moduleResolution": "node",
 		"target": "es5",
@@ -38,12 +38,15 @@
 		"types": [
 			"node",
 			"jest"
-		]
-	},
-	"paths": {
-		"@/*": [
-			"./src/*"
-		]
+		],
+		"paths": {
+			"@/*": [
+				"./site/*"
+			],
+			"ScrollBar/*": [
+				"./src/*"
+			]
+		}
 	},
 	"include": [
 		"src",

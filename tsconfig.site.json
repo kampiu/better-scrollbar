@@ -20,8 +20,12 @@
 		"noEmit": true,
 		"jsx": "react-jsx",
 		"baseUrl": "./",
+		"composite": true,
 		"paths": {
 			"@/*": [
+				"./site/*"
+			],
+			"ScrollBar/*": [
 				"./src/*"
 			]
 		}
@@ -36,6 +40,6 @@
 		"dist"
 	],
 	"include": [
-		"src"
+		"site"
 	]
 }
