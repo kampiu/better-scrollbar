@@ -50,8 +50,10 @@
 	},
 	"include": [
 		"src",
+		"site",
 		".prettierrc.js",
-		"babel.config.js"
+		"babel.config.js",
+		"types/*.ts"
 	],
 	"exclude": [
 		"node_modules",

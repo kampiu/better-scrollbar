@@ -55,6 +55,7 @@
 		"@types/react-dom": "^16.9.24",
 		"@vitejs/plugin-react": "^4.2.0",
 		"babel-plugin-jsx-remove-data-test-id": "^3.0.0",
+		"clsx": "^2.1.0",
 		"enzyme": "^3.11.0",
 		"enzyme-adapter-react-16": "^1.15.7",
 		"eslint": "^8.17.0",

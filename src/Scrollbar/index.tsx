@@ -38,29 +38,81 @@ import {
 } from "./defaultRenderElements"
 
 export interface ScrollbarProps {
+	/** 滚动容器类名 */
+	className?: string
+	/**
+	 * @description 滚动回调方法
+	 * @param {Event} event 当前滚动区域事件
+	 */
 	onScroll?: (event: Event) => void
-	onScrollFrame?: (value: ScrollPosition) => void
+	/**
+	 * @description 滚动时对应视图区滚动数据回调
+	 * @param {ScrollPosition} position
+	 */
+	onScrollFrame?: (position: ScrollPosition) => void
+	/**
+	 * @description 滚动开始回调
+	 */
 	onScrollStart?: () => void
+	/**
+	 * @description 滚动停止回调
+	 */
 	onScrollStop?: () => void
-	onUpdate?: (value: ScrollPosition) => void
+	/**
+	 * @description 滚动时对应视图区滚动数据回调
+	 * @param {ScrollPosition} position
+	 */
+	onUpdate?: (position: ScrollPosition) => void
+	/**
+	 * @description 绘制滚动区域
+	 * @param {(HTMLAttributes<HTMLDivElement>) => React.ReactElement} props
+	 */
 	renderView?: (props?: HTMLAttributes<HTMLDivElement>) => React.ReactElement
+	/**
+	 * @description 绘制水平滚动轨
+	 * @param {(HTMLAttributes<HTMLDivElement>) => React.ReactElement} props
+	 */
 	renderTrackHorizontal?: (props?: HTMLAttributes<HTMLDivElement>) => React.ReactElement
+	/**
+	 * @description 绘制垂直滚动轨
+	 * @param {(HTMLAttributes<HTMLDivElement>) => React.ReactElement} props
+	 */
 	renderTrackVertical?: (props?: HTMLAttributes<HTMLDivElement>) => React.ReactElement
+	/**
+	 * @description 绘制垂直滚动滑块
+	 * @param {(HTMLAttributes<HTMLDivElement>) => React.ReactElement} props
+	 */
 	renderThumbHorizontal?: (props?: HTMLAttributes<HTMLDivElement>) => React.ReactElement
+	/**
+	 * @description 绘制垂直滚动滑块
+	 * @param {(HTMLAttributes<HTMLDivElement>) => React.ReactElement} props
+	 */
 	renderThumbVertical?: (props?: HTMLAttributes<HTMLDivElement>) => React.ReactElement
+	/** 容器渲染标签 div | span */
 	tagName?: string
+	/** 滚动条粗细 */
 	thumbSize?: number
+	/** 滚动条最小大小 */
 	thumbMinSize?: number
+	/** 是否在滚动条不足以出现时隐藏 */
 	hideTracksWhenNotNeeded?: boolean
+	/** 是否自动隐藏滚动条 */
 	autoHide?: boolean
+	/** 自动隐藏滚动条延迟时间 */
 	autoHideTimeout?: number
+	/** 自动隐藏滚动条持续时间 */
 	autoHideDuration?: number
+	/** 自动高度 */
 	autoHeight?: boolean
+	/** 自动高度最小值 */
 	autoHeightMin?: string | number
+	/** 自动高度最大值 */
 	autoHeightMax?: string | number
 	universal?: boolean
+	/** 容器块样式 */
 	style?: React.CSSProperties
-	children?: React.ReactNode
+	/** 滚动区域内容 */
+	children?: React.ReactNode | Array<React.ReactNode>
 }
 
 /** 当前滚动位置信息 */
@@ -602,6 +654,7 @@ export default class Scrollbar extends Component<ScrollbarProps, ScrollbarState>
 			autoHeightMax = 200,
 			style,
 			children,
+			className,
 			...props
 		} = this.props
 		
@@ -662,7 +715,7 @@ export default class Scrollbar extends Component<ScrollbarProps, ScrollbarState>
 		}
 		
 		return createElement(tagName, {
-			...props, key: "container", "data-id": "container", style: containerStyle, ref: (ref: HTMLElement) => {
+			...props, key: "container", "data-id": "container", style: containerStyle, className, ref: (ref: HTMLElement) => {
 				this.container = ref
 			}
 		}, [
@@ -710,54 +763,3 @@ export default class Scrollbar extends Component<ScrollbarProps, ScrollbarState>
 		])
 	}
 }
-
-// Scrollbar.propTypes = {
-// 	onScroll: PropTypes.func,
-// 	onScrollFrame: PropTypes.func,
-// 	onScrollStart: PropTypes.func,
-// 	onScrollStop: PropTypes.func,
-// 	onUpdate: PropTypes.func,
-// 	renderView: PropTypes.func,
-// 	renderTrackHorizontal: PropTypes.func,
-// 	renderTrackVertical: PropTypes.func,
-// 	renderThumbHorizontal: PropTypes.func,
-// 	renderThumbVertical: PropTypes.func,
-// 	tagName: PropTypes.string,
-// 	thumbSize: PropTypes.number,
-// 	thumbMinSize: PropTypes.number,
-// 	hideTracksWhenNotNeeded: PropTypes.bool,
-// 	autoHide: PropTypes.bool,
-// 	autoHideTimeout: PropTypes.number,
-// 	autoHideDuration: PropTypes.number,
-// 	autoHeight: PropTypes.bool,
-// 	autoHeightMin: PropTypes.oneOfType([
-// 		PropTypes.number,
-// 		PropTypes.string
-// 	]),
-// 	autoHeightMax: PropTypes.oneOfType([
-// 		PropTypes.number,
-// 		PropTypes.string
-// 	]),
-// 	universal: PropTypes.bool,
-// 	style: PropTypes.object,
-// 	children: PropTypes.node,
-// }
-
-Scrollbar.defaultProps = {
-	renderView: renderViewDefault,
-	renderTrackHorizontal: renderTrackHorizontalDefault,
-	renderTrackVertical: renderTrackVerticalDefault,
-	renderThumbHorizontal: renderThumbHorizontalDefault,
-	renderThumbVertical: renderThumbVerticalDefault,
-	tagName: "div",
-	thumbMinSize: 30,
-	hideTracksWhenNotNeeded: false,
-	autoHide: false,
-	autoHideTimeout: 1000,
-	autoHideDuration: 200,
-	autoHeight: false,
-	autoHeightMin: 0,
-	autoHeightMax: 200,
-	universal: false,
-}
-
