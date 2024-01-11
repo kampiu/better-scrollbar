@@ -46,6 +46,6 @@ jobs:
           NODE_OPTIONS: "--max_old_space_size=4096"
 
       - name: Publish to npm
-          run: |
-            echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
-            npm publish --access public
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
+          npm publish --access public
