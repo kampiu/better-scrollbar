@@ -37,12 +37,12 @@ import {
 	renderThumbVerticalDefault
 } from "./defaultRenderElements"
 
-interface ScrollbarProps {
+export interface ScrollbarProps {
 	onScroll?: (event: Event) => void
-	onScrollFrame?: (value: Values) => void
+	onScrollFrame?: (value: ScrollPosition) => void
 	onScrollStart?: () => void
 	onScrollStop?: () => void
-	onUpdate?: (value: Values) => void
+	onUpdate?: (value: ScrollPosition) => void
 	renderView?: (props?: HTMLAttributes<HTMLDivElement>) => React.ReactElement
 	renderTrackHorizontal?: (props?: HTMLAttributes<HTMLDivElement>) => React.ReactElement
 	renderTrackVertical?: (props?: HTMLAttributes<HTMLDivElement>) => React.ReactElement
@@ -63,7 +63,8 @@ interface ScrollbarProps {
 	children?: React.ReactNode
 }
 
-interface Values {
+/** 当前滚动位置信息 */
+export interface ScrollPosition {
 	left: number
 	top: number
 	scrollLeft: number
@@ -126,7 +127,7 @@ export default class Scrollbar extends Component<ScrollbarProps, ScrollbarState>
 		this.getScrollHeight = this.getScrollHeight.bind(this)
 		this.getClientWidth = this.getClientWidth.bind(this)
 		this.getClientHeight = this.getClientHeight.bind(this)
-		this.getValues = this.getValues.bind(this)
+		this.getPosition = this.getPosition.bind(this)
 		this.getThumbHorizontalWidth = this.getThumbHorizontalWidth.bind(this)
 		this.getThumbVerticalHeight = this.getThumbVerticalHeight.bind(this)
 		this.getScrollLeftForOffset = this.getScrollLeftForOffset.bind(this)
@@ -210,7 +211,7 @@ export default class Scrollbar extends Component<ScrollbarProps, ScrollbarState>
 		return this.view?.clientHeight || 0
 	}
 	
-	getValues(): Values {
+	getPosition(): ScrollPosition {
 		const {
 			scrollLeft = 0,
 			scrollTop = 0,
@@ -533,15 +534,15 @@ export default class Scrollbar extends Component<ScrollbarProps, ScrollbarState>
 		})
 	}
 	
-	update(callback?: (v: Values) => void) {
+	update(callback?: (position: ScrollPosition) => void) {
 		this.raf(() => this._update(callback))
 	}
 	
-	_update(callback?: (v: Values) => void) {
+	_update(callback?: (v: ScrollPosition) => void) {
 		const {onUpdate, hideTracksWhenNotNeeded} = this.props
-		const values: Values = this.getValues()
+		const position: ScrollPosition = this.getPosition()
 		if (getScrollbarWidth()) {
-			const {scrollLeft, clientWidth, scrollWidth} = values
+			const {scrollLeft, clientWidth, scrollWidth} = position
 			const trackHorizontalWidth = getInnerWidth(this.trackHorizontal as HTMLElement)
 			const thumbHorizontalWidth = this.getThumbHorizontalWidth()
 			const thumbHorizontalX = scrollLeft / (scrollWidth - clientWidth) * (trackHorizontalWidth - thumbHorizontalWidth)
@@ -549,7 +550,7 @@ export default class Scrollbar extends Component<ScrollbarProps, ScrollbarState>
 				width: thumbHorizontalWidth,
 				transform: `translateX(${ thumbHorizontalX }px)`
 			}
-			const {scrollTop, clientHeight, scrollHeight} = values
+			const {scrollTop, clientHeight, scrollHeight} = position
 			const trackVerticalHeight = getInnerHeight(this.trackVertical as HTMLElement)
 			const thumbVerticalHeight = this.getThumbVerticalHeight()
 			const thumbVerticalY = scrollTop / (scrollHeight - clientHeight) * (trackVerticalHeight - thumbVerticalHeight)
@@ -570,9 +571,9 @@ export default class Scrollbar extends Component<ScrollbarProps, ScrollbarState>
 			this.thumbHorizontal && css(this.thumbHorizontal, thumbHorizontalStyle)
 			this.thumbVertical && css(this.thumbVertical, thumbVerticalStyle)
 		}
-		if (onUpdate) onUpdate(values)
+		if (onUpdate) onUpdate(position)
 		if (typeof callback !== "function") return
-		callback(values)
+		callback(position)
 	}
 	
 	render() {

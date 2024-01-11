@@ -1,5 +1,6 @@
 import React, { useMemo } from "react"
 import ScrollBars from "ScrollBar"
+import ShadowScrollbars from "../../components/ShadowScrollbars"
 import styles from "./index.module.less"
 
 function Index() {
@@ -9,18 +10,31 @@ function Index() {
 	}, [])
 	
 	return (
-		<div className={styles.container}>
-			<ScrollBars
-				autoHeight
-				autoHeightMax={ 500 }
-			>
-				{
-					list.map(item => (
-						<div key={item} className={styles.item}>{item}</div>
-					))
-				}
-			
-			</ScrollBars>
+		<div className={styles.containerWrapper}>
+			<div className={ styles.container }>
+				<ScrollBars
+					autoHeight
+					autoHeightMax={ 500 }
+				>
+					{
+						list.map(item => (
+							<div key={ item } className={ styles.item }>{ item }</div>
+						))
+					}
+				</ScrollBars>
+			</div>
+			<div className={ styles.container }>
+				<ShadowScrollbars
+					autoHeight
+					autoHeightMax={ 500 }
+				>
+					{
+						list.map(item => (
+							<div key={ item } className={ styles.item }>{ item }</div>
+						))
+					}
+				</ShadowScrollbars>
+			</div>
 		</div>
 	)
 }
