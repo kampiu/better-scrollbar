@@ -19,4 +19,4 @@ dist
 test
 coverage
 .idea
-
+.npmrc
