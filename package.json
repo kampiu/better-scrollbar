@@ -1,6 +1,6 @@
 {
 	"name": "better-scrollbar",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "",
 	"keywords": [
 		"scroll",
@@ -10,6 +10,7 @@
 		"react",
 		"custom"
 	],
+	"homepage": "https://kampiu.github.io/better-scrollbar/",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/kampiu/better-scrollbar"
@@ -26,8 +27,8 @@
 	],
 	"scripts": {
 		"build": "father build",
-		"site:dev": "vite",
 		"site:build": "tsc && vite build",
+		"site:dev": "vite",
 		"test": "jest --config jest.config.js --cache=false"
 	},
 	"dependencies": {
