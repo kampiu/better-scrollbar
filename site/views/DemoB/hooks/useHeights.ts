@@ -1,13 +1,21 @@
 import { findDOMNode } from "../utils"
-import React, { useCallback, useRef, useState } from "react"
+import React, { useCallback, useRef, useState, useEffect } from "react"
+import raf from "../raf"
 
 export default () => {
 	
 	const instanceRef = useRef(new Map<React.Key, HTMLElement>())
 	const heightsRef = useRef(new Map())
 	const [updatedMark, setUpdatedMark] = useState(0)
+	const collectRafRef = useRef<number>(-1)
 	
-	const collectHeight = useCallback((sync = false) =>  {
+	const cancelRaf = useCallback(() => {
+		raf.cancel(collectRafRef.current)
+	}, [])
+	
+	const collectHeight = useCallback((sync = false) => {
+		cancelRaf()
+		
 		const doCollect = () => {
 			instanceRef.current.forEach((element, key) => {
 				if (element && element.offsetParent) {
@@ -21,26 +29,26 @@ export default () => {
 			setUpdatedMark(v => v + 1)
 		}
 		
-		
-		// if (sync) {
-			doCollect();
-		// } else {
-		// 	collectRafRef.current = raf(doCollect);
-		// }
-	}, [])
-	
-	const setInstanceRef = useCallback((item: any, index: number,instance: HTMLElement) => {
-		// const key = item.key
-		// const origin = instanceRef.current.get(key)
-		
-		if (instance) {
-			instanceRef.current.set(index, instance)
-			collectHeight()
+		if (sync) {
+			doCollect()
 		} else {
-			instanceRef.current.delete(index)
+			collectRafRef.current = raf(doCollect)
 		}
 	}, [])
 	
+	const setInstanceRef = useCallback<(item: React.ReactElement, instance: HTMLElement) => void>((item, instance) => {
+		const key = item?.key as React.Key
+		if (instance) {
+			instanceRef.current.set(key, instance)
+			collectHeight()
+		} else {
+			instanceRef.current.delete(key)
+		}
+	}, [])
 	
-	return [setInstanceRef, collectHeight, heightsRef.current, updatedMark]
+	useEffect(() => {
+		return cancelRaf
+	}, [])
+	
+	return {setInstanceRef, collectHeight, heights: heightsRef.current, updatedMark}
 }

@@ -45,7 +45,9 @@ const wrapperRaf = (callback: () => void, times = 1): number => {
 wrapperRaf.cancel = (id: number) => {
 	const realId = rafIds.get(id)
 	cleanup(id)
-	return caf(realId)
+	if (typeof realId === "number") {
+		caf(realId)
+	}
 }
 
 export default wrapperRaf

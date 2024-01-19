@@ -1,4 +1,4 @@
-const MIN_SIZE = 20;
+const MIN_SIZE = 60;
 
 export function getSpinSize(containerSize = 0, scrollRange = 0) {
 	let baseSize = (containerSize / scrollRange) * 100;
