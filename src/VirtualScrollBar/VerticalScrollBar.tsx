@@ -1,5 +1,6 @@
 import React, { useState, forwardRef, useCallback, useEffect, useRef, useImperativeHandle } from "react"
 import raf from "./raf"
+import clsx from "clsx"
 import type { ScrollState } from "./types"
 
 function getPageXY(
@@ -25,6 +26,8 @@ export interface VerticalScrollBarProps {
 	onStartMove?: () => void
 	/** 停止滚动的回调 */
 	onStopMove?: () => void
+	/** 样式前缀 */
+	prefixCls?: string
 }
 
 export interface VerticalScrollBarRef {
@@ -40,7 +43,8 @@ const VerticalScrollBar = forwardRef<VerticalScrollBarRef, VerticalScrollBarProp
 		spinSize,
 		onScroll,
 		onStartMove,
-		onStopMove
+		onStopMove,
+		prefixCls
 	} = props
 	
 	// 拖拽状态
@@ -66,7 +70,7 @@ const VerticalScrollBar = forwardRef<VerticalScrollBarRef, VerticalScrollBarProp
 		
 		visibleTimeoutRef.current = setTimeout(() => {
 			setVisible(false)
-		}, 3000)
+		}, 1000)
 	}, [])
 	
 	useEffect(() => {
@@ -194,37 +198,25 @@ const VerticalScrollBar = forwardRef<VerticalScrollBarRef, VerticalScrollBarProp
 	
 	const trackStyles: React.CSSProperties = {
 		visibility: visible && canScroll ? undefined : "hidden",
-		position: "absolute",
-		width: 6,
-		right: 2,
-		bottom: 2,
-		top: 2,
-		borderRadius: 3,
-		overflow: "hidden"
 	}
 	
 	const thumbStyles: React.CSSProperties = {
 		transform: `translateY(${ top }px)`,
 		height: spinSize,
-		position: "absolute",
-		width: "100%",
-		borderRadius: "inherit",
-		cursor: "pointer",
-		backgroundColor: "rgba(0, 0, 0, 0.5)",
-		left: 0,
-		top: 0,
 	}
 	
 	return (
 		<div
 			ref={ trackRef }
 			style={ trackStyles }
+			className={ clsx(`${ prefixCls }-vertical-track`) }
 			onMouseDown={ onContainerMouseDown }
 			onMouseMove={ delayHiddenScrollBar }
 		>
 			<div
 				ref={ thumbRef }
 				style={ thumbStyles }
+				className={ clsx(`${ prefixCls }-vertical-thumb`) }
 				onMouseDown={ onThumbMouseDown }
 			/>
 		</div>

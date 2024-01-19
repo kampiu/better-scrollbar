@@ -10,7 +10,7 @@ export function isDOM(node: any): node is HTMLElement | SVGElement {
  */
 export function findDOMNode<T = Element | Text>(
 	node: React.ReactInstance | HTMLElement | SVGElement,
-): T {
+): T | null {
 	if (isDOM(node)) {
 		return (node as unknown) as T;
 	}

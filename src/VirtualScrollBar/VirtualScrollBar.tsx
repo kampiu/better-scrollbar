@@ -6,19 +6,18 @@ import React, {
 	useRef,
 	Children,
 	useState,
-	type CSSProperties
 } from "react"
+import { flushSync } from "react-dom"
+import raf from "./raf"
 import { useImmer } from "use-immer"
-import "./DemoB.less"
 import { Item } from "./Item"
 import useHeights from "./hooks/useHeights"
 import VerticalScrollBar, { VerticalScrollBarRef } from "./VerticalScrollBar"
 import { getSpinSize } from "./scrollUtil"
 import { ScrollState, Size } from "./types"
 import useResizeObserver from "./hooks/useResizeObserver"
-
-const TableWidth = 500
-const TableHeight = 500
+import clsx from "clsx"
+import "./init.less"
 
 /**
  * props 汇总
@@ -46,16 +45,33 @@ export interface ScrollBarProps {
 	thumbMinSize?: number
 	/** 是否需要虚拟滚动 */
 	isVirtual?: boolean
+	/** 外层容器样式 */
+	className?: string
+	/** 样式前缀 */
+	prefixCls?: string
+	/** 滚动容器宽度 */
+	width?: number
+	/** 滚动容器高度 */
+	height?: number
+	/** 当前可查看的数据 */
+	onVisibleChange?: () => void
 }
 
-function DemoB(props: PropsWithChildren<ScrollBarProps>) {
+function VirtualScrollBar(props: PropsWithChildren<ScrollBarProps>) {
 	const {
 		onScrollStart,
 		onScrollEnd,
-		children
+		onScroll,
+		children,
+		width,
+		height,
+		className,
+		prefixCls = "scroll-bar"
 	} = props
 	
-	const childNodes = typeof children === "function" ? [children] : Children.toArray(children) as Array<React.ReactElement>
+	const childNodes = useMemo(() => {
+		return (typeof children === "function" ? [children] : Children.toArray(children)) as Array<React.ReactElement>
+	}, [children])
 	
 	// 滚动视区高宽
 	const [size, setSize] = useState<Size>({width: 0, height: 0})
@@ -78,8 +94,6 @@ function DemoB(props: PropsWithChildren<ScrollBarProps>) {
 		setSize(newSize)
 	})
 	
-	const wheelingRef = useRef<number | null>(null)
-	
 	const {scrollHeight, start, end, offset: fillerOffset} = useMemo(() => {
 		let itemTop = 0
 		let startIndex: number | undefined
@@ -89,7 +103,7 @@ function DemoB(props: PropsWithChildren<ScrollBarProps>) {
 		for (let i = 0, len = childNodes.length; i < len; i++) {
 			const key = childNodes[i]?.key as React.Key
 			
-			const cacheHeight = heights.get(key)
+			const cacheHeight = heights[key]
 			const currentItemBottom = itemTop + (cacheHeight === undefined ? 10 : cacheHeight)
 			
 			// Check item top in the range
@@ -124,7 +138,7 @@ function DemoB(props: PropsWithChildren<ScrollBarProps>) {
 			end: endIndex,
 			offset: startOffset,
 		}
-	}, [childNodes, scrollState.y, size.height, updatedMark])
+	}, [childNodes, scrollState.y, updatedMark, size.height])
 	
 	const maxScrollHeight = scrollHeight - size.height
 	const maxScrollHeightRef = useRef(maxScrollHeight)
@@ -140,6 +154,24 @@ function DemoB(props: PropsWithChildren<ScrollBarProps>) {
 	}
 	
 	const detectScrollingInterval = useRef<ReturnType<typeof setTimeout>>()
+	
+	const onUpdateScrollState = useCallback((scrollTop: number | ((preScrollTop: number) => number)) => {
+		setScrollState((preScrollState) => {
+			if (typeof scrollTop === "function") {
+				preScrollState.y = scrollTop(preScrollState.y)
+			} else {
+				preScrollState.y = scrollTop
+			}
+			preScrollState.isScrolling = true
+			viewContainerRef.current.scrollTop = preScrollState.y
+		})
+		
+		// 同步滚动状态
+		flushSync(() => {
+			onScroll?.(scrollState)
+		})
+		delayScrollStateChange()
+	}, [])
 	
 	/**
 	 * @description 延迟"是否滚动"的滚动状态变更
@@ -162,11 +194,12 @@ function DemoB(props: PropsWithChildren<ScrollBarProps>) {
 		}
 	}, [scrollState.isScrolling])
 	
+	const wheelingRaf = useRef<number>(-1)
+	
 	useEffect(() => {
 		const onScroll = function (event: WheelEvent): void {
 			event?.preventDefault()
 			
-			if (wheelingRef.current) return
 			const {deltaX, deltaY} = event
 			
 			const StepY = 360
@@ -177,25 +210,19 @@ function DemoB(props: PropsWithChildren<ScrollBarProps>) {
 				? Math.max(Math.min(deltaX, StepX), -StepX)
 				: Math.max(Math.min(deltaY, StepY), -StepY)
 			
-			wheelingRef.current = window.requestAnimationFrame(() => {
-				if (wheelingRef.current) {
-					window.cancelAnimationFrame(wheelingRef.current)
-				}
-				wheelingRef.current = null
+			wheelingRaf.current = raf(() => {
+				raf.cancel(wheelingRaf.current)
 				collectHeight()
 				
-				setScrollState((preScrollState) => {
-					preScrollState.y = keepInRange(Math.max(preScrollState.y + scrollTop, 0))
-					preScrollState.isScrolling = true
-					viewContainerRef.current.scrollTop = preScrollState.y
+				onUpdateScrollState((preScrollStateY) => {
+					return keepInRange(Math.max(preScrollStateY + scrollTop, 0))
 				})
-				
-				delayScrollStateChange()
 			})
 		}
 		
 		scrollContainerRef.current?.addEventListener("wheel", onScroll)
 		return () => {
+			raf.cancel(wheelingRaf.current)
 			scrollContainerRef.current?.removeEventListener("wheel", onScroll)
 		}
 	}, [])
@@ -214,31 +241,31 @@ function DemoB(props: PropsWithChildren<ScrollBarProps>) {
 		verticalScrollBarInstance.current?.delayHiddenScrollBar()
 	}, [])
 	
-	const styles: CSSProperties = {
-		overflowY: "hidden",
-		position: "relative",
-		width: "100%",
-		height: "100%",
-	}
+	// When data size reduce. It may trigger native scroll event back to fit scroll position
+	const onFallbackScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
+		const {scrollTop: newScrollTop} = event.currentTarget
+		if (newScrollTop !== scrollState.y) {
+			onUpdateScrollState(newScrollTop)
+		}
+	}, [scrollState])
 	
-	console.log("--scrollHeight--", scrollHeight)
 	return (
-		<div
-			className="list-wrapper"
-		>
+		<div style={ {width, height} } className={ clsx(className, `${ prefixCls }-outer-container`) }>
 			<div
 				ref={ viewContainerRef }
-				style={styles}
+				style={ {width, height} }
+				className={ clsx(`${ prefixCls }-inner-container`) }
 				onMouseEnter={ delayHideScrollBar }
+				onScroll={ onFallbackScroll }
 			>
 				<div
 					ref={ scrollContainerRef }
-					className="scroll"
 					style={ {height: scrollHeight} }
+					className={ clsx(`${ prefixCls }-container`) }
 					onScroll={ event => event.preventDefault() }
 				>
 					<div
-						className="scroll-wrapper"
+						className={ clsx(`${ prefixCls }-wrapper`) }
 						style={ {transform: `translateY(${ fillerOffset }px)`} }
 					>
 						{ listChildren }
@@ -246,22 +273,16 @@ function DemoB(props: PropsWithChildren<ScrollBarProps>) {
 				</div>
 			</div>
 			<VerticalScrollBar
+				prefixCls={ prefixCls }
 				ref={ verticalScrollBarInstance }
 				scrollState={ scrollState }
 				scrollRange={ scrollHeight }
 				containerSize={ size.height }
 				spinSize={ getSpinSize(size.height, scrollHeight) }
-				onScroll={ (newOffsetTop: number) => {
-					setScrollState((preScrollState) => {
-						const result = keepInRange(newOffsetTop)
-						viewContainerRef.current.scrollTop = result
-						preScrollState.y = result
-					})
-					delayScrollStateChange()
-				} }
+				onScroll={ onUpdateScrollState }
 			/>
 		</div>
 	)
 }
 
-export default DemoB
+export default VirtualScrollBar
