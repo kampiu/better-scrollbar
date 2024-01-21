@@ -1,9 +1,8 @@
 import { useEffect, useRef } from "react"
 import type { MutableRefObject } from "react"
 import raf from "../raf"
-import { Size } from "../types"
 
-export default (ref: MutableRefObject<HTMLDivElement>, callback: (size: Size) => void) => {
+export default (ref: MutableRefObject<HTMLDivElement>, callback: (size: { width: number, height: number }) => void) => {
 	const collectRafRef = useRef<number>(-1)
 	
 	useEffect(() => {

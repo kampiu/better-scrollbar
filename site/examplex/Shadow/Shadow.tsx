@@ -41,32 +41,7 @@ function Shadow() {
 		clientWidth: 0,
 		clientHeight: 0
 	})
-	const [dataSource, setDataSource] = useState(MockData)
-	
-	const onRemove = useCallback((node) => {
-		setDataSource(preState => {
-			return preState.filter(item => item.id !== node.id)
-		})
-	}, [])
-	
-	const onInsertBefore = useCallback((index: number) => {
-		setDataSource(preState => {
-			uuid++
-			preState.splice(Math.max(index, 0), 0, {
-				id: uuid
-			})
-			return [...preState]
-		})
-	}, [])
-	
-	const onInsertAfter = useCallback((index) => {
-		setDataSource(preState => {
-			preState.splice(index, 0, {
-				id: preState[preState.length - 1].id + 1
-			})
-			return preState
-		})
-	}, [])
+	const [dataSource] = useState(MockData)
 	
 	const onScroll = useCallback((state) => {
 		setScrollState(state)
@@ -88,16 +63,9 @@ function Shadow() {
 					onScroll={ onScroll }
 				>
 					{
-						dataSource.map((item, index) => (
+						dataSource.map((item) => (
 							<div key={ item.id } className="item">
 								No.{ item.id }
-								<span>
-								<div className="button error" onClick={ () => onRemove(item) }>Remove</div>
-								<div className="button primary"
-								     onClick={ () => onInsertBefore(index) }>Insert Before</div>
-								<div className="button primary"
-								     onClick={ () => onInsertAfter(index) }>Insert After</div>
-							</span>
 							</div>
 						))
 					}
@@ -110,10 +78,14 @@ function Shadow() {
 					style={ shadowBottomStyle }/>
 			</div>
 			<div className="result">
-				<div className="result-item">数据量 {dataSource.length}  <span style={{marginLeft: "auto"}}>{ scrollState.isScrolling ? "滚动中" : "停止滚动" }</span></div>
-				<div className="result-item">滚动位置 <span>Y: { scrollState.y }</span> <span>X: { scrollState.x }</span></div>
-				<div className="result-item">滚动内容大小 <span>Width: { scrollState.scrollWidth }</span> <span>Height: { scrollState.scrollHeight }</span></div>
-				<div className="result-item">视区内容大小 <span>Width: { scrollState.clientWidth }</span> <span>Height: { scrollState.clientHeight }</span></div>
+				<div className="result-item">数据量 { dataSource.length } <span
+					style={ {marginLeft: "auto"} }>{ scrollState.isScrolling ? "滚动中" : "停止滚动" }</span></div>
+				<div className="result-item">滚动位置 <span>Y: { scrollState.y }</span>
+					<span>X: { scrollState.x }</span></div>
+				<div className="result-item">滚动内容大小 <span>Width: { scrollState.scrollWidth }</span>
+					<span>Height: { scrollState.scrollHeight }</span></div>
+				<div className="result-item">视区内容大小 <span>Width: { scrollState.clientWidth }</span>
+					<span>Height: { scrollState.clientHeight }</span></div>
 			</div>
 		</div>
 	)

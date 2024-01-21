@@ -1,13 +1,9 @@
 import React from "react"
 import Shadow from "../../examplex/Shadow"
-import VirtualScrollBar from "../../components/VirtualScrollBar"
+import RandomHeight from "../../examplex/RandomHeight"
 import Container from "../../components/Container"
 import styles from "./index.module.less"
 import GithubIcon from "./Github"
-
-const itemHeight = 40
-
-const bigList = Array.from({length: 100000}, (_v, i) => i)
 
 function Index() {
 	
@@ -24,21 +20,11 @@ function Index() {
 				
 				<div className={ styles.containerWrapper }>
 					<Container
-						title="虚拟滚动条"
-						desc="大数据表场景下通过劫持children注入props优化滚动性能。"
+						title="动态高度"
+						desc="满足items动态高度，支持动态修改items数量，减轻使用成本。"
 						className={ styles.container }
 					>
-						<VirtualScrollBar
-						>
-							{
-								bigList.map((item, index) => (
-									<div key={ item } className={ styles.item } style={ {
-										height: itemHeight,
-										transform: `translateY(${ index * itemHeight }px)`
-									} }>{ item + 1 }</div>
-								))
-							}
-						</VirtualScrollBar>
+						<RandomHeight />
 					</Container>
 					<Container
 						title="阴影滚动条"
@@ -49,6 +35,9 @@ function Index() {
 					</Container>
 				</div>
 			</div>
+			{/*<div className={ styles.layoutSection }>*/}
+			{/*	<div className={ styles.layoutHeader }>使用</div>*/}
+			{/*</div>*/}
 		
 		</div>
 	)

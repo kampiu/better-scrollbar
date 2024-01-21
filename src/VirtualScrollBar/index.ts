@@ -1,4 +1,5 @@
 import VirtualScrollBar from "./VirtualScrollBar"
 
-export type { Size, ScrollState } from "./types"
+export type { ScrollState } from "./types"
+export type { ScrollBarProps } from "./VirtualScrollBar"
 export default VirtualScrollBar
