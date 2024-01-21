@@ -4,14 +4,14 @@ export interface ScrollState {
 	x: number
 	/** Y轴滚动偏移 */
 	y: number
+	/** 可滚动宽度 */
+	scrollWidth: number
+	/** 可滚动高度 */
+	scrollHeight: number
+	/** 滚动视区宽度 */
+	clientWidth: number
+	/** 滚动视区高度 */
+	clientHeight: number
 	/** 是否正在滚动 */
 	isScrolling: boolean
-}
-
-/** 容器尺寸 */
-export interface Size {
-	/** 容器宽度 */
-	width: number
-	/** 容器高度 */
-	height: number
 }

@@ -5,19 +5,17 @@ import React, {
 	useMemo,
 	useRef,
 	Children,
-	useState,
 } from "react"
-import { flushSync } from "react-dom"
 import raf from "./raf"
 import { useImmer } from "use-immer"
-import { Item } from "./Item"
+import { Item } from "./components/Item"
 import useHeights from "./hooks/useHeights"
-import VerticalScrollBar, { VerticalScrollBarRef } from "./VerticalScrollBar"
+import ScrollBar, { ScrollBarRef } from "./components/ScrollBar"
 import { getSpinSize } from "./scrollUtil"
-import { ScrollState, Size } from "./types"
+import { ScrollState } from "./types"
 import useResizeObserver from "./hooks/useResizeObserver"
 import clsx from "clsx"
-import "./init.less"
+import "./VirtualScrollBar.less"
 
 /**
  * props 汇总
@@ -37,24 +35,24 @@ export interface ScrollBarProps {
 	onScrollEnd?: () => void
 	/** 滚动更新回调 */
 	onScroll?: (scrollState: ScrollState) => void
-	/** 滚动条粗细 */
-	thumbSize?: number
-	/** 滚动条隐藏延时 */
-	thumbAutoHideTimeout?: number
-	/** 滚动条最小长度 */
-	thumbMinSize?: number
 	/** 是否需要虚拟滚动 */
 	isVirtual?: boolean
 	/** 外层容器样式 */
 	className?: string
+	/** 单条数据默认高度 */
+	itemHeight?: number
 	/** 样式前缀 */
 	prefixCls?: string
 	/** 滚动容器宽度 */
 	width?: number
 	/** 滚动容器高度 */
 	height?: number
-	/** 当前可查看的数据 */
-	onVisibleChange?: () => void
+	/** 滚动条粗细 */
+	scrollBarSize?: number
+	/** 滚动条是否隐藏 */
+	scrollBarHidden?: boolean
+	/** 滚动条隐藏延时 */
+	scrollBarAutoHideTimeout?: number
 }
 
 function VirtualScrollBar(props: PropsWithChildren<ScrollBarProps>) {
@@ -66,32 +64,41 @@ function VirtualScrollBar(props: PropsWithChildren<ScrollBarProps>) {
 		width,
 		height,
 		className,
-		prefixCls = "scroll-bar"
+		prefixCls = "scroll-bar",
+		itemHeight = 20,
+		scrollBarSize = 6,
+		scrollBarHidden = false,
+		scrollBarAutoHideTimeout = 1000,
 	} = props
 	
 	const childNodes = useMemo(() => {
 		return (typeof children === "function" ? [children] : Children.toArray(children)) as Array<React.ReactElement>
 	}, [children])
 	
-	// 滚动视区高宽
-	const [size, setSize] = useState<Size>({width: 0, height: 0})
 	// 可见视图区域
 	const viewContainerRef = useRef<HTMLDivElement>({} as HTMLDivElement)
 	// 滚动区域
 	const scrollContainerRef = useRef<HTMLDivElement>({} as HTMLDivElement)
 	// 滚动条
-	const verticalScrollBarInstance = useRef<VerticalScrollBarRef>({} as VerticalScrollBarRef)
+	const verticalScrollBarInstance = useRef<ScrollBarRef>({} as ScrollBarRef)
 	// const horizontalScrollBarInstance = useRef<HTMLDivElement>({} as HTMLDivElement)
 	const {setInstanceRef, collectHeight, heights, updatedMark} = useHeights()
 	
 	const [scrollState, setScrollState] = useImmer<ScrollState>({
 		x: 0,
 		y: 0,
+		scrollHeight: 0,
+		scrollWidth: 0,
+		clientHeight: 0,
+		clientWidth: 0,
 		isScrolling: false
 	})
 	
 	useResizeObserver(viewContainerRef, (newSize) => {
-		setSize(newSize)
+		setScrollState((preScrollState) => {
+			preScrollState.clientHeight = newSize.height
+			preScrollState.clientWidth = newSize.width
+		})
 	})
 	
 	const {scrollHeight, start, end, offset: fillerOffset} = useMemo(() => {
@@ -103,8 +110,8 @@ function VirtualScrollBar(props: PropsWithChildren<ScrollBarProps>) {
 		for (let i = 0, len = childNodes.length; i < len; i++) {
 			const key = childNodes[i]?.key as React.Key
 			
-			const cacheHeight = heights[key]
-			const currentItemBottom = itemTop + (cacheHeight === undefined ? 10 : cacheHeight)
+			const cacheHeight = heights.get(key)
+			const currentItemBottom = itemTop + (cacheHeight === undefined ? itemHeight : cacheHeight)
 			
 			// Check item top in the range
 			if (currentItemBottom >= scrollState.y && startIndex === undefined) {
@@ -113,7 +120,7 @@ function VirtualScrollBar(props: PropsWithChildren<ScrollBarProps>) {
 			}
 			
 			// Check item bottom in the range. We will render additional one item for motion usage
-			if (currentItemBottom > scrollState.y + size.height && endIndex === undefined) {
+			if (currentItemBottom > scrollState.y + scrollState.clientHeight && endIndex === undefined) {
 				endIndex = i
 			}
 			
@@ -124,7 +131,7 @@ function VirtualScrollBar(props: PropsWithChildren<ScrollBarProps>) {
 			startIndex = 0
 			startOffset = 0
 			
-			endIndex = Math.ceil(size.height / 10)
+			endIndex = Math.ceil(scrollState.clientHeight / itemHeight)
 		}
 		if (endIndex === undefined) {
 			endIndex = childNodes.length - 1
@@ -138,20 +145,26 @@ function VirtualScrollBar(props: PropsWithChildren<ScrollBarProps>) {
 			end: endIndex,
 			offset: startOffset,
 		}
-	}, [childNodes, scrollState.y, updatedMark, size.height])
+	}, [itemHeight, childNodes, scrollState.y, updatedMark, scrollState.clientHeight])
 	
-	const maxScrollHeight = scrollHeight - size.height
+	useEffect(() => {
+		setScrollState((preScrollState) => {
+			preScrollState.scrollHeight = scrollHeight
+		})
+	}, [scrollHeight])
+	
+	const maxScrollHeight = scrollHeight - scrollState.clientHeight
 	const maxScrollHeightRef = useRef(maxScrollHeight)
 	maxScrollHeightRef.current = maxScrollHeight
 	
-	function keepInRange(newScrollTop: number) {
+	const keepInRange = useCallback((newScrollTop: number) => {
 		let newTop = newScrollTop
 		if (!Number.isNaN(maxScrollHeightRef.current)) {
 			newTop = Math.min(newTop, maxScrollHeightRef.current)
 		}
 		newTop = Math.max(newTop, 0)
 		return newTop
-	}
+	}, [])
 	
 	const detectScrollingInterval = useRef<ReturnType<typeof setTimeout>>()
 	
@@ -166,12 +179,12 @@ function VirtualScrollBar(props: PropsWithChildren<ScrollBarProps>) {
 			viewContainerRef.current.scrollTop = preScrollState.y
 		})
 		
-		// 同步滚动状态
-		flushSync(() => {
-			onScroll?.(scrollState)
-		})
 		delayScrollStateChange()
 	}, [])
+	
+	useEffect(() => {
+		onScroll?.(scrollState)
+	}, [scrollState])
 	
 	/**
 	 * @description 延迟"是否滚动"的滚动状态变更
@@ -272,13 +285,18 @@ function VirtualScrollBar(props: PropsWithChildren<ScrollBarProps>) {
 					</div>
 				</div>
 			</div>
-			<VerticalScrollBar
+			<ScrollBar
 				prefixCls={ prefixCls }
 				ref={ verticalScrollBarInstance }
+				hidden={ scrollBarHidden }
+				thumbSize={ {
+					height: getSpinSize(scrollState.clientHeight, scrollHeight),
+					width: scrollBarSize
+				} }
+				autoHideTimeout={ scrollBarAutoHideTimeout }
 				scrollState={ scrollState }
 				scrollRange={ scrollHeight }
-				containerSize={ size.height }
-				spinSize={ getSpinSize(size.height, scrollHeight) }
+				containerSize={ scrollState.clientHeight }
 				onScroll={ onUpdateScrollState }
 			/>
 		</div>

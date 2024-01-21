@@ -4,8 +4,8 @@ import raf from "../raf"
 
 export default () => {
 	
-	const instanceRef = useRef(new Map<React.Key, HTMLElement>())
-	const heightsRef = useRef<Record<string, number>>({})
+	const instanceRef = useRef<Map<React.Key, HTMLElement>>(new Map())
+	const heightsRef = useRef<Map<React.Key, number>>(new Map())
 	const [updatedMark, setUpdatedMark] = useState(0)
 	const collectRafRef = useRef<number>(-1)
 	
@@ -21,8 +21,8 @@ export default () => {
 				if (element && element.offsetParent) {
 					const htmlElement = findDOMNode<HTMLElement>(element)
 					const {offsetHeight} = htmlElement || {}
-					if (heightsRef.current[key] !== offsetHeight && htmlElement) {
-						heightsRef.current[key] = htmlElement.offsetHeight
+					if (heightsRef.current.get(key) !== offsetHeight && htmlElement) {
+						heightsRef.current.set(key, htmlElement.offsetHeight)
 					}
 				}
 			})

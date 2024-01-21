@@ -1,7 +1,7 @@
 import React, { useState, forwardRef, useCallback, useEffect, useRef, useImperativeHandle } from "react"
-import raf from "./raf"
+import raf from "../raf"
 import clsx from "clsx"
-import type { ScrollState } from "./types"
+import type { ScrollState } from "../types"
 
 function getPageXY(
 	e: React.MouseEvent | React.TouchEvent | MouseEvent | TouchEvent,
@@ -11,15 +11,13 @@ function getPageXY(
 	return obj[horizontal ? "pageX" : "pageY"]
 }
 
-export interface VerticalScrollBarProps {
+export interface ScrollBarProps {
 	/** 当前滚动状态 */
 	scrollState: ScrollState
 	/** 当前可视区容器大小 */
 	containerSize: number
 	/** 内容最大高度 */
 	scrollRange: number
-	/** 滚动条高度 */
-	spinSize: number
 	/** 滚动回调 */
 	onScroll?: (offset: number) => void
 	/** 开始滚动的回调 */
@@ -28,23 +26,34 @@ export interface VerticalScrollBarProps {
 	onStopMove?: () => void
 	/** 样式前缀 */
 	prefixCls?: string
+	/** 滚动条粗细 */
+	thumbSize: {
+		width: number
+		height: number
+	}
+	/** 滚动条是否隐藏 */
+	hidden?: boolean
+	/** 滚动条隐藏延时 */
+	autoHideTimeout?: number
 }
 
-export interface VerticalScrollBarRef {
+export interface ScrollBarRef {
 	/** 延时隐藏滚动条 */
 	delayHiddenScrollBar: () => void
 }
 
-const VerticalScrollBar = forwardRef<VerticalScrollBarRef, VerticalScrollBarProps>((props, ref) => {
+const ScrollBar = forwardRef<ScrollBarRef, ScrollBarProps>((props, ref) => {
 	const {
 		scrollState,
 		containerSize,
 		scrollRange,
-		spinSize,
 		onScroll,
 		onStartMove,
 		onStopMove,
-		prefixCls
+		prefixCls,
+		thumbSize,
+		hidden,
+		autoHideTimeout,
 	} = props
 	
 	// 拖拽状态
@@ -70,7 +79,7 @@ const VerticalScrollBar = forwardRef<VerticalScrollBarRef, VerticalScrollBarProp
 		
 		visibleTimeoutRef.current = setTimeout(() => {
 			setVisible(false)
-		}, 1000)
+		}, autoHideTimeout)
 	}, [])
 	
 	useEffect(() => {
@@ -87,7 +96,7 @@ const VerticalScrollBar = forwardRef<VerticalScrollBarRef, VerticalScrollBarProp
 	// 容器实际滚动高度 = 内容最大高度 - 内容可见高度
 	const enableScrollRange = scrollRange - containerSize || 0
 	// 可以滚动的高度 = 滚动的容器高度 - 滚动条高度
-	const enableOffsetRange = containerSize - spinSize || 0
+	const enableOffsetRange = containerSize - thumbSize.height || 0
 	
 	// `scrollWidth` < `clientWidth` means no need to show scrollbar
 	const canScroll = enableScrollRange > 0
@@ -197,12 +206,13 @@ const VerticalScrollBar = forwardRef<VerticalScrollBarRef, VerticalScrollBarProp
 	}))
 	
 	const trackStyles: React.CSSProperties = {
-		visibility: visible && canScroll ? undefined : "hidden",
+		visibility: !hidden && visible && canScroll ? undefined : "hidden",
+		width: thumbSize.width
 	}
 	
 	const thumbStyles: React.CSSProperties = {
 		transform: `translateY(${ top }px)`,
-		height: spinSize,
+		height: thumbSize.height,
 	}
 	
 	return (
@@ -223,4 +233,4 @@ const VerticalScrollBar = forwardRef<VerticalScrollBarRef, VerticalScrollBarProp
 	)
 })
 
-export default VerticalScrollBar
+export default ScrollBar

@@ -69,7 +69,6 @@ class ShadowScrollBar extends Component<ShadowScrollbarsProps> {
 					style={ {width: "100%", height: "100%"} }
 					{ ...props }/>
 				<div
-					data-aa="aa"
 					ref={this.shadowTop}
 					style={ shadowTopStyle }/>
 				<div

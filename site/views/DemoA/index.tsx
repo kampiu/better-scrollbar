@@ -1,13 +1,11 @@
 import React from "react"
-import ShadowScrollBar from "../../components/ShadowScrollBar"
+import Shadow from "../../examplex/Shadow"
 import VirtualScrollBar from "../../components/VirtualScrollBar"
 import Container from "../../components/Container"
 import styles from "./index.module.less"
 import GithubIcon from "./Github"
 
 const itemHeight = 40
-
-const list = Array.from({length: 100}, (_v, i) => i)
 
 const bigList = Array.from({length: 100000}, (_v, i) => i)
 
@@ -47,17 +45,7 @@ function Index() {
 						desc="当滚动条隐藏场景下可通过阴影效果提示滚动区域内存在部分内容被遮挡，可通过滚动预览更多内容。"
 						className={ styles.container }
 					>
-						<ShadowScrollBar
-						>
-							{
-								list.map((item, index) => (
-									<div key={ item } className={ styles.item } style={ {
-										height: itemHeight,
-										transform: `translateY(${ index * itemHeight }px)`
-									} }>{ item + 1 }</div>
-								))
-							}
-						</ShadowScrollBar>
+						<Shadow />
 					</Container>
 				</div>
 			</div>

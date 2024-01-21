@@ -1,11 +1,11 @@
 import React from "react"
-import ShadowScrollBar from "../../examplex/ShadowScrollBar"
+import Shadow from "../../examplex/Shadow"
 
 export default () => {
 	
 	return (
 		<div>
-			<ShadowScrollBar/>
+			<Shadow/>
 		</div>
 	)
 }
