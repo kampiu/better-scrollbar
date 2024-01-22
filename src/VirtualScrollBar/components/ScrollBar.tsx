@@ -2,14 +2,7 @@ import React, { useState, forwardRef, useCallback, useEffect, useRef, useImperat
 import raf from "../raf"
 import clsx from "clsx"
 import type { ScrollState } from "../types"
-
-function getPageXY(
-	e: React.MouseEvent | React.TouchEvent | MouseEvent | TouchEvent,
-	horizontal?: boolean,
-) {
-	const obj = "touches" in e ? e.touches[0] : e
-	return obj[horizontal ? "pageX" : "pageY"]
-}
+import { getPageXY } from "../utils"
 
 export interface ScrollBarProps {
 	/** 当前滚动状态 */
@@ -28,7 +21,9 @@ export interface ScrollBarProps {
 	prefixCls?: string
 	/** 滚动条粗细 */
 	thumbSize: {
+		/** 宽度 */
 		width: number
+		/** 高度 */
 		height: number
 	}
 	/** 滚动条是否隐藏 */

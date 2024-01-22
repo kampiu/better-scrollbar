@@ -1,7 +1,8 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useRef, useState } from "react"
 import { VirtualScrollBar } from "../../../src"
 import "./index.less"
 import { generateRandomInteger } from "./utils"
+import { VirtualScrollBarRef } from "../../../src/VirtualScrollBar"
 
 let uuid = 0
 const MockData = Array.from({length: 5000}, (_) => {
@@ -14,6 +15,7 @@ const MockData = Array.from({length: 5000}, (_) => {
 
 function RandomHeight() {
 	
+	const ref = useRef<VirtualScrollBarRef>({} as VirtualScrollBarRef)
 	const [scrollState, setScrollState] = useState({
 		x: 0,
 		y: 0,
@@ -32,11 +34,14 @@ function RandomHeight() {
 	}, [])
 	
 	const onInsertBefore = useCallback((index: number) => {
+		const height = generateRandomInteger(30, 100)
+		const scrollY = ref.current.getScrollState().y
+		ref.current?.scrollTo({x: 0, y: scrollY + height})
 		setDataSource(preState => {
 			uuid++
 			preState.splice(Math.max(index, 0), 0, {
 				id: uuid,
-				height: generateRandomInteger(30, 100)
+				height
 			})
 			return [...preState]
 		})
@@ -57,6 +62,7 @@ function RandomHeight() {
 		<div className="wrapper">
 			<div className="list">
 				<VirtualScrollBar
+					ref={ ref }
 					onScroll={ setScrollState }
 				>
 					{

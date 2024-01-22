@@ -4,7 +4,7 @@ import React, {
 	useEffect,
 	useMemo,
 	useRef,
-	Children,
+	Children, forwardRef, useImperativeHandle,
 } from "react"
 import raf from "./raf"
 import { useImmer } from "use-immer"
@@ -12,23 +12,13 @@ import { Item } from "./components/Item"
 import useHeights from "./hooks/useHeights"
 import ScrollBar, { ScrollBarRef } from "./components/ScrollBar"
 import { getSpinSize } from "./scrollUtil"
-import { ScrollState } from "./types"
+import { ScrollOffset, ScrollState } from "./types"
 import useResizeObserver from "./hooks/useResizeObserver"
 import clsx from "clsx"
 import "./VirtualScrollBar.less"
 
-/**
- * props 汇总
- * @param {} onScrollStart 开始滚动回调
- * @param {} onScrollEnd 结束滚动回调
- * @param {} onScroll 滚动更新回调（返回当前滚动的x、y，意味着就是top、left）
- * @param {number} thumbSize 滚动条粗细（配置看看能不能聚合）
- * @param {number} thumbAutoHideTimeout 滚动条隐藏延时
- * @param {number} thumbMinSize 滚动条最小面积
- * @param {boolean} isVirtual 是否需要虚拟滚动
- * @constructor
- */
-export interface ScrollBarProps {
+/** 组件Props */
+export interface VirtualScrollBarProps {
 	/** 开始滚动回调 */
 	onScrollStart?: () => void
 	/** 结束滚动回调 */
@@ -55,7 +45,16 @@ export interface ScrollBarProps {
 	scrollBarAutoHideTimeout?: number
 }
 
-function VirtualScrollBar(props: PropsWithChildren<ScrollBarProps>) {
+export interface VirtualScrollBarRef {
+	/** 滚动到指定位置 */
+	scrollTo: (offset: ScrollOffset) => void
+	/** 获取当前的滚动数据 */
+	getScrollState: () => ScrollState
+	/** 滚动、视区中的高宽变化回调 */
+	resizeObserver: (callback: (resizeState: Pick<ScrollState, "scrollWidth" | "scrollHeight" | "clientWidth" | "clientHeight">) => void) => void
+}
+
+const VirtualScrollBar = forwardRef<VirtualScrollBarRef, PropsWithChildren<VirtualScrollBarProps>>((props, ref) => {
 	const {
 		onScrollStart,
 		onScrollEnd,
@@ -81,7 +80,6 @@ function VirtualScrollBar(props: PropsWithChildren<ScrollBarProps>) {
 	const scrollContainerRef = useRef<HTMLDivElement>({} as HTMLDivElement)
 	// 滚动条
 	const verticalScrollBarInstance = useRef<ScrollBarRef>({} as ScrollBarRef)
-	// const horizontalScrollBarInstance = useRef<HTMLDivElement>({} as HTMLDivElement)
 	const {setInstanceRef, collectHeight, heights, updatedMark} = useHeights()
 	
 	const [scrollState, setScrollState] = useImmer<ScrollState>({
@@ -113,20 +111,20 @@ function VirtualScrollBar(props: PropsWithChildren<ScrollBarProps>) {
 			const cacheHeight = heights.get(key)
 			const currentItemBottom = itemTop + (cacheHeight === undefined ? itemHeight : cacheHeight)
 			
-			// Check item top in the range
+			// 选中范围中的顶部项目
 			if (currentItemBottom >= scrollState.y && startIndex === undefined) {
 				startIndex = i
 				startOffset = itemTop
 			}
 			
-			// Check item bottom in the range. We will render additional one item for motion usage
+			// 检查范围内的项目底部。我们将渲染额外的一个项目以供运动使用
 			if (currentItemBottom > scrollState.y + scrollState.clientHeight && endIndex === undefined) {
 				endIndex = i
 			}
 			
 			itemTop = currentItemBottom
 		}
-		// When scrollTop at the end but data cut to small count will reach this
+		// 当滚动顶部在末尾，但数据被剪切到小计数时，将达到此值
 		if (startIndex === undefined) {
 			startIndex = 0
 			startOffset = 0
@@ -137,7 +135,7 @@ function VirtualScrollBar(props: PropsWithChildren<ScrollBarProps>) {
 			endIndex = childNodes.length - 1
 		}
 		
-		// Give cache to improve scroll experience
+		// 提供缓存以改善滚动体验
 		endIndex = Math.min(endIndex + 1, childNodes.length - 1)
 		return {
 			scrollHeight: itemTop,
@@ -254,13 +252,32 @@ function VirtualScrollBar(props: PropsWithChildren<ScrollBarProps>) {
 		verticalScrollBarInstance.current?.delayHiddenScrollBar()
 	}, [])
 	
-	// When data size reduce. It may trigger native scroll event back to fit scroll position
+	// 当数据大小减小时。它可能会触发本地滚动事件以适应滚动位置
 	const onFallbackScroll = useCallback((event: React.UIEvent<HTMLDivElement>) => {
 		const {scrollTop: newScrollTop} = event.currentTarget
 		if (newScrollTop !== scrollState.y) {
 			onUpdateScrollState(newScrollTop)
 		}
 	}, [scrollState])
+	
+	useImperativeHandle(ref, (): VirtualScrollBarRef => {
+		return {
+			scrollTo(offset: ScrollOffset) {
+				onUpdateScrollState(offset.y)
+			},
+			getScrollState() {
+				return scrollState
+			},
+			resizeObserver(callback){
+				callback({
+					clientWidth: scrollState.clientWidth,
+					clientHeight: scrollState.clientHeight,
+					scrollWidth: scrollState.scrollWidth,
+					scrollHeight: scrollState.scrollHeight,
+				})
+			}
+		}
+	})
 	
 	return (
 		<div style={ {width, height} } className={ clsx(className, `${ prefixCls }-outer-container`) }>
@@ -301,6 +318,6 @@ function VirtualScrollBar(props: PropsWithChildren<ScrollBarProps>) {
 			/>
 		</div>
 	)
-}
+})
 
 export default VirtualScrollBar

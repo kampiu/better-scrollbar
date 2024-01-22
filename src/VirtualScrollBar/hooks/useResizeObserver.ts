@@ -20,27 +20,3 @@ export default (ref: MutableRefObject<HTMLDivElement>, callback: (size: { width:
 		}
 	}, [])
 }
-
-// export default () => {
-// 	const collectRafRef = useRef<number>(-1)
-//
-// 	const resizeObserverRef = useRef<ResizeObserver>()
-//
-// 	useEffect(() => {
-// 		return () => {
-// 			resizeObserverRef.current?.disconnect?.()
-// 			raf.cancel(collectRafRef.current)
-// 		}
-// 	}, [])
-//
-// 	return useCallback((ref: MutableRefObject<HTMLDivElement>, callback: (size: Size) => void) => {
-// 		const target = ref.current
-// 		resizeObserverRef.current = new ResizeObserver(() => {
-// 			const {width = 0, height = 0} = target?.getBoundingClientRect?.() || {}
-// 			collectRafRef.current = raf(() => {
-// 				callback?.({width, height})
-// 			})
-// 		})
-// 		resizeObserverRef.current?.observe?.(target)
-// 	}, [])
-// }

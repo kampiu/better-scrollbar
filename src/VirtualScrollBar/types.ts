@@ -15,3 +15,11 @@ export interface ScrollState {
 	/** 是否正在滚动 */
 	isScrolling: boolean
 }
+
+/** 滚动偏移 */
+export interface ScrollOffset {
+	/** X轴上的偏移 */
+	x: number
+	/** Y轴上的偏移 */
+	y: number
+}
