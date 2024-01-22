@@ -65,6 +65,26 @@ export interface VirtualScrollBarProps {
 	 * @param {(HTMLAttributes<HTMLDivElement>) => React.ReactElement} props
 	 */
 	renderView?: RenderElement<HTMLProps<HTMLDivElement>>
+	/**
+	 * @description 绘制水平滚动轨
+	 * @param {(HTMLAttributes<HTMLDivElement>) => React.ReactElement} props
+	 */
+	renderTrackHorizontal?: RenderElement<HTMLProps<HTMLDivElement>>
+	/**
+	 * @description 绘制垂直滚动轨
+	 * @param {(HTMLAttributes<HTMLDivElement>) => React.ReactElement} props
+	 */
+	renderTrackVertical?: RenderElement<HTMLProps<HTMLDivElement>>
+	/**
+	 * @description 绘制垂直滚动滑块
+	 * @param {(HTMLAttributes<HTMLDivElement>) => React.ReactElement} props
+	 */
+	renderThumbHorizontal?: RenderElement<HTMLProps<HTMLDivElement>>
+	/**
+	 * @description 绘制垂直滚动滑块
+	 * @param {(HTMLAttributes<HTMLDivElement>) => React.ReactElement} props
+	 */
+	renderThumbVertical?: RenderElement<HTMLProps<HTMLDivElement>>
 }
 
 export interface VirtualScrollBarRef {

@@ -1,7 +1,16 @@
-import React, { useState, forwardRef, useCallback, useEffect, useRef, useImperativeHandle } from "react"
+import React, {
+	useState,
+	forwardRef,
+	useCallback,
+	useEffect,
+	useRef,
+	useImperativeHandle,
+	HTMLProps,
+	cloneElement
+} from "react"
 import raf from "../raf"
 import clsx from "clsx"
-import type { ScrollState } from "../types"
+import { RenderElement, ScrollState } from "../types"
 import { getPageXY } from "../utils"
 
 export interface ScrollBarProps {
@@ -11,7 +20,10 @@ export interface ScrollBarProps {
 	containerSize: number
 	/** 内容最大高度 */
 	scrollRange: number
-	/** 滚动回调 */
+	/**
+	 * @description 滚动回调
+	 * @param {number} offset 当前轴上的偏移位置
+	 */
 	onScroll?: (offset: number) => void
 	/** 开始滚动的回调 */
 	onStartMove?: () => void
@@ -30,6 +42,16 @@ export interface ScrollBarProps {
 	hidden?: boolean
 	/** 滚动条隐藏延时 */
 	autoHideTimeout?: number
+	/**
+	 * @description 绘制垂直滚动轨
+	 * @param {(HTMLAttributes<HTMLDivElement>) => React.ReactElement} props
+	 */
+	renderTrack: RenderElement<HTMLProps<HTMLDivElement>>
+	/**
+	 * @description 绘制垂直滚动滑块
+	 * @param {(HTMLAttributes<HTMLDivElement>) => React.ReactElement} props
+	 */
+	renderThumb: RenderElement<HTMLProps<HTMLDivElement>>
 }
 
 export interface ScrollBarRef {
@@ -49,6 +71,8 @@ const ScrollBar = forwardRef<ScrollBarRef, ScrollBarProps>((props, ref) => {
 		thumbSize,
 		hidden,
 		autoHideTimeout,
+		renderTrack,
+		renderThumb
 	} = props
 	
 	// 拖拽状态
@@ -211,21 +235,45 @@ const ScrollBar = forwardRef<ScrollBarRef, ScrollBarProps>((props, ref) => {
 	}
 	
 	return (
-		<div
-			ref={ trackRef }
-			style={ trackStyles }
-			className={ clsx(`${ prefixCls }-vertical-track`) }
-			onMouseDown={ onContainerMouseDown }
-			onMouseMove={ delayHiddenScrollBar }
-		>
-			<div
-				ref={ thumbRef }
-				style={ thumbStyles }
-				className={ clsx(`${ prefixCls }-vertical-thumb`) }
-				onMouseDown={ onThumbMouseDown }
-			/>
-		</div>
+		cloneElement(
+			renderTrack({
+				style: trackStyles,
+				className: clsx(`${ prefixCls }-vertical-track`)
+			}),
+			{
+				ref: trackRef,
+				onMouseDown: onContainerMouseDown,
+				onMouseMove: delayHiddenScrollBar
+			},
+			cloneElement(
+				renderThumb({
+					style: thumbStyles,
+					className: clsx(`${ prefixCls }-vertical-thumb`)
+				}),
+				{
+					ref: thumbRef,
+					onMouseDown: onThumbMouseDown
+				}
+			)
+		)
 	)
+	
+	// return (
+	// 	<div
+	// 		ref={ trackRef }
+	// 		style={ trackStyles }
+	// 		className={ clsx(`${ prefixCls }-vertical-track`) }
+	// 		onMouseDown={ onContainerMouseDown }
+	// 		onMouseMove={ delayHiddenScrollBar }
+	// 	>
+	// 		<div
+	// 			ref={ thumbRef }
+	// 			style={ thumbStyles }
+	// 			className={ clsx(`${ prefixCls }-vertical-thumb`) }
+	// 			onMouseDown={ onThumbMouseDown }
+	// 		/>
+	// 	</div>
+	// )
 })
 
 export default ScrollBar

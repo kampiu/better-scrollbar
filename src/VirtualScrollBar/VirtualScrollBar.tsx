@@ -15,7 +15,11 @@ import { getSpinSize } from "./scrollUtil"
 import { ScrollOffset, ScrollState, VirtualScrollBarProps, VirtualScrollBarRef } from "./types"
 import useResizeObserver from "./hooks/useResizeObserver"
 import clsx from "clsx"
-import { renderViewDefault } from "./defaultRenderElements"
+import {
+	renderViewDefault,
+	renderTrackVerticalDefault,
+	renderThumbVerticalDefault
+} from "./defaultRenderElements"
 import "./VirtualScrollBar.less"
 
 const VirtualScrollBar = forwardRef<VirtualScrollBarRef, PropsWithChildren<VirtualScrollBarProps>>((props, ref) => {
@@ -32,7 +36,11 @@ const VirtualScrollBar = forwardRef<VirtualScrollBarRef, PropsWithChildren<Virtu
 		scrollBarSize = 6,
 		scrollBarHidden = false,
 		scrollBarAutoHideTimeout = 1000,
-		renderView = renderViewDefault
+		renderView = renderViewDefault,
+		renderTrackVertical = renderTrackVerticalDefault,
+		renderThumbVertical = renderThumbVerticalDefault,
+		// renderThumbHorizontal = renderThumbHorizontalDefault,
+		// renderTrackHorizontal = renderTrackHorizontalDefault
 	} = props
 	
 	const childNodes = useMemo(() => {
@@ -261,10 +269,11 @@ const VirtualScrollBar = forwardRef<VirtualScrollBarRef, PropsWithChildren<Virtu
 				>
 					{
 						cloneElement(
-							renderView(),
-							{
+							renderView({
 								className: clsx(`${ prefixCls }-wrapper`),
 								style: {transform: `translateY(${ fillerOffset }px)`}
+							}),
+							{
 							},
 							listChildren
 						)
@@ -279,6 +288,8 @@ const VirtualScrollBar = forwardRef<VirtualScrollBarRef, PropsWithChildren<Virtu
 					height: getSpinSize(scrollState.clientHeight, scrollHeight),
 					width: scrollBarSize
 				} }
+				renderTrack={renderTrackVertical}
+				renderThumb={renderThumbVertical}
 				autoHideTimeout={ scrollBarAutoHideTimeout }
 				scrollState={ scrollState }
 				scrollRange={ scrollHeight }

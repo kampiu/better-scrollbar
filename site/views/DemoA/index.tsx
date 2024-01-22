@@ -1,7 +1,8 @@
 import React from "react"
 import Shadow from "../../examplex/Shadow"
 import RandomHeight from "../../examplex/RandomHeight"
-import LargeScaleScroll from "../../examplex/DragAndDrop"
+import DragAndDrop from "../../examplex/DragAndDrop"
+import CustomStyles from "../../examplex/CustomStyles"
 import Container from "../../components/Container"
 import styles from "./index.module.less"
 import GithubIcon from "./Github"
@@ -39,7 +40,14 @@ function Index() {
 						desc="结合SortableJs实现拖拽排序。"
 						className={ styles.container }
 					>
-						<LargeScaleScroll />
+						<DragAndDrop />
+					</Container>
+					<Container
+						title="高度自定义样式"
+						desc="自定义滚动容器、滚动条等。"
+						className={ styles.container }
+					>
+						<CustomStyles />
 					</Container>
 				</div>
 			</div>
