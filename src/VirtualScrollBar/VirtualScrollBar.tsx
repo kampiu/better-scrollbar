@@ -1,58 +1,22 @@
 import React, {
-	PropsWithChildren,
 	useCallback,
 	useEffect,
 	useMemo,
 	useRef,
-	Children, forwardRef, useImperativeHandle,
+	Children, forwardRef, useImperativeHandle, cloneElement
 } from "react"
+import type { PropsWithChildren } from "react"
 import raf from "./raf"
 import { useImmer } from "use-immer"
 import { Item } from "./components/Item"
 import useHeights from "./hooks/useHeights"
 import ScrollBar, { ScrollBarRef } from "./components/ScrollBar"
 import { getSpinSize } from "./scrollUtil"
-import { ScrollOffset, ScrollState } from "./types"
+import { ScrollOffset, ScrollState, VirtualScrollBarProps, VirtualScrollBarRef } from "./types"
 import useResizeObserver from "./hooks/useResizeObserver"
 import clsx from "clsx"
+import { renderViewDefault } from "./defaultRenderElements"
 import "./VirtualScrollBar.less"
-
-/** 组件Props */
-export interface VirtualScrollBarProps {
-	/** 开始滚动回调 */
-	onScrollStart?: () => void
-	/** 结束滚动回调 */
-	onScrollEnd?: () => void
-	/** 滚动更新回调 */
-	onScroll?: (scrollState: ScrollState) => void
-	/** 是否需要虚拟滚动 */
-	isVirtual?: boolean
-	/** 外层容器样式 */
-	className?: string
-	/** 单条数据默认高度 */
-	itemHeight?: number
-	/** 样式前缀 */
-	prefixCls?: string
-	/** 滚动容器宽度 */
-	width?: number
-	/** 滚动容器高度 */
-	height?: number
-	/** 滚动条粗细 */
-	scrollBarSize?: number
-	/** 滚动条是否隐藏 */
-	scrollBarHidden?: boolean
-	/** 滚动条隐藏延时 */
-	scrollBarAutoHideTimeout?: number
-}
-
-export interface VirtualScrollBarRef {
-	/** 滚动到指定位置 */
-	scrollTo: (offset: ScrollOffset) => void
-	/** 获取当前的滚动数据 */
-	getScrollState: () => ScrollState
-	/** 滚动、视区中的高宽变化回调 */
-	resizeObserver: (callback: (resizeState: Pick<ScrollState, "scrollWidth" | "scrollHeight" | "clientWidth" | "clientHeight">) => void) => void
-}
 
 const VirtualScrollBar = forwardRef<VirtualScrollBarRef, PropsWithChildren<VirtualScrollBarProps>>((props, ref) => {
 	const {
@@ -68,6 +32,7 @@ const VirtualScrollBar = forwardRef<VirtualScrollBarRef, PropsWithChildren<Virtu
 		scrollBarSize = 6,
 		scrollBarHidden = false,
 		scrollBarAutoHideTimeout = 1000,
+		renderView = renderViewDefault
 	} = props
 	
 	const childNodes = useMemo(() => {
@@ -268,7 +233,7 @@ const VirtualScrollBar = forwardRef<VirtualScrollBarRef, PropsWithChildren<Virtu
 			getScrollState() {
 				return scrollState
 			},
-			resizeObserver(callback){
+			resizeObserver(callback) {
 				callback({
 					clientWidth: scrollState.clientWidth,
 					clientHeight: scrollState.clientHeight,
@@ -294,12 +259,16 @@ const VirtualScrollBar = forwardRef<VirtualScrollBarRef, PropsWithChildren<Virtu
 					className={ clsx(`${ prefixCls }-container`) }
 					onScroll={ event => event.preventDefault() }
 				>
-					<div
-						className={ clsx(`${ prefixCls }-wrapper`) }
-						style={ {transform: `translateY(${ fillerOffset }px)`} }
-					>
-						{ listChildren }
-					</div>
+					{
+						cloneElement(
+							renderView(),
+							{
+								className: clsx(`${ prefixCls }-wrapper`),
+								style: {transform: `translateY(${ fillerOffset }px)`}
+							},
+							listChildren
+						)
+					}
 				</div>
 			</div>
 			<ScrollBar
