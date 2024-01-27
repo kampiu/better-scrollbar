@@ -1,5 +1,5 @@
 import React from "react"
-import { VirtualScrollBar } from "../../../src"
+import VirtualScrollBar from "../../../src"
 import "./index.less"
 
 let uuid = 0

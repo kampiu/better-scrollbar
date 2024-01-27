@@ -1,6 +1,6 @@
 # better-scrollbar
 
-Based on typescript translation repository, [react-custom-scrollbars](https://github.com/malte-wessel/react-custom-scrollbars)
+Highly customizable, high-performance virtual list for big data rendering
 
 ## Installation
 ```bash
@@ -10,50 +10,46 @@ npm install better-scrollbar --save
 ## Usage
 
 ```javascript
-import { Scrollbars } from 'better-scrollbar';
+import React, { Component } from "react"
+import ScrollBar from 'better-scrollbar';
 
 class App extends Component {
-  render() {
-    return (
-      <Scrollbars style={{ width: 500, height: 300 }}>
-        <p>Some great content...</p>
-      </Scrollbars>
-    );
-  }
+	render() {
+		return (
+			<ScrollBar style={{ width: 500, height: 300 }}>
+				<p>Some great content...</p>
+			</ScrollBar>
+		);
+	}
 }
 ```
 
 The `<Scrollbars>` component is completely customizable. Check out the following code:
 
 ```javascript
-import { ScrollBar } from "better-scrollbar"
+import React, { Component } from "react"
+import ScrollBar from "better-scrollbar"
 
 class CustomScrollBar extends Component {
-  render() {
-    return (
-      <ScrollBar
-        onScroll={this.handleScroll}
-        onScrollFrame={this.handleScrollFrame}
-        onScrollStart={this.handleScrollStart}
-        onScrollStop={this.handleScrollStop}
-        onUpdate={this.handleUpdate}
-        renderView={this.renderView}
-        renderTrackHorizontal={this.renderTrackHorizontal}
-        renderTrackVertical={this.renderTrackVertical}
-        renderThumbHorizontal={this.renderThumbHorizontal}
-        renderThumbVertical={this.renderThumbVertical}
-        autoHide
-        autoHideTimeout={1000}
-        autoHideDuration={200}
-        autoHeight
-        autoHeightMin={0}
-        autoHeightMax={200}
-        thumbMinSize={30}
-        universal={true}
-        {...this.props}
-      />
-    );
-  }
+	render() {
+		return (
+			<ScrollBar
+				width={this.props.width}
+				height={this.props.height}
+				onScroll={this.handleScroll}
+				onScrollStart={this.handleScrollStart}
+				onScrollEnd={this.handleScrollEnd}
+				renderView={this.renderView}
+				renderTrackHorizontal={this.renderTrackHorizontal}
+				renderTrackVertical={this.renderTrackVertical}
+				renderThumbHorizontal={this.renderThumbHorizontal}
+				renderThumbVertical={this.renderThumbVertical}
+				scrollBarHidden
+				scrollBarAutoHideTimeout={1000}
+				{...this.props}
+			/>
+		);
+	}
 }
 ```
 
@@ -63,16 +59,8 @@ Run the simple example:
 ```bash
 # Make sure that you've installed the dependencies
 npm install
-# Move to example directory
-cd better-scrollbar/examples/simple
-npm install
-npm start
+npm run site:dev
 ```
-
-## Tests
-```bash
-# Make sure that you've installed the dependencies
-npm install
 
 
 ## License

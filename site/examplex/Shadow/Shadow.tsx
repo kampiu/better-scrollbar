@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from "react"
-import { VirtualScrollBar } from "../../../src"
+import VirtualScrollBar from "../../../src"
 import "./index.less"
 import css from "dom-css"
 

@@ -1,8 +1,8 @@
 import React, { useCallback, useRef, useState } from "react"
-import { VirtualScrollBar } from "../../../src"
+import VirtualScrollBar from "../../../src"
 import "./index.less"
 import { generateRandomInteger } from "./utils"
-import { VirtualScrollBarRef } from "../../../src/VirtualScrollBar"
+import type { VirtualScrollBarRef } from "../../../src"
 
 let uuid = 0
 const MockData = Array.from({length: 5000}, (_) => {

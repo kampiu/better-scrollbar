@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react"
 import type { HTMLProps, PropsWithChildren } from "react"
-import { VirtualScrollBar } from "../../../src"
+import VirtualScrollBar from "../../../src"
 import "./index.less"
 
 let uuid = 0

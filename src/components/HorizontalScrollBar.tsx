@@ -5,61 +5,14 @@ import React, {
 	useEffect,
 	useRef,
 	useImperativeHandle,
-	HTMLProps,
 	cloneElement
 } from "react"
 import raf from "../raf"
 import clsx from "clsx"
-import { RenderElement, ScrollState } from "../types"
 import { getPageXY } from "../utils"
+import type { ScrollBarProps, ScrollBarRef } from "../types"
 
-export interface ScrollBarProps {
-	/** 当前滚动状态 */
-	scrollState: ScrollState
-	/** 当前可视区容器大小 */
-	containerSize: number
-	/** 内容最大高度 */
-	scrollRange: number
-	/**
-	 * @description 滚动回调
-	 * @param {number} offset 当前轴上的偏移位置
-	 */
-	onScroll?: (offset: number) => void
-	/** 开始滚动的回调 */
-	onStartMove?: () => void
-	/** 停止滚动的回调 */
-	onStopMove?: () => void
-	/** 样式前缀 */
-	prefixCls?: string
-	/** 滚动条粗细 */
-	thumbSize: {
-		/** 宽度 */
-		width: number
-		/** 高度 */
-		height: number
-	}
-	/** 滚动条是否隐藏 */
-	hidden?: boolean
-	/** 滚动条隐藏延时 */
-	autoHideTimeout?: number
-	/**
-	 * @description 绘制垂直滚动轨
-	 * @param {(HTMLAttributes<HTMLDivElement>) => React.ReactElement} props
-	 */
-	renderTrack: RenderElement<HTMLProps<HTMLDivElement>>
-	/**
-	 * @description 绘制垂直滚动滑块
-	 * @param {(HTMLAttributes<HTMLDivElement>) => React.ReactElement} props
-	 */
-	renderThumb: RenderElement<HTMLProps<HTMLDivElement>>
-}
-
-export interface ScrollBarRef {
-	/** 延时隐藏滚动条 */
-	delayHiddenScrollBar: () => void
-}
-
-const ScrollBar = forwardRef<ScrollBarRef, ScrollBarProps>((props, ref) => {
+const HorizontalScrollBar = forwardRef<ScrollBarRef, ScrollBarProps>((props, ref) => {
 	const {
 		scrollState,
 		containerSize,
@@ -257,23 +210,6 @@ const ScrollBar = forwardRef<ScrollBarRef, ScrollBarProps>((props, ref) => {
 			)
 		)
 	)
-	
-	// return (
-	// 	<div
-	// 		ref={ trackRef }
-	// 		style={ trackStyles }
-	// 		className={ clsx(`${ prefixCls }-vertical-track`) }
-	// 		onMouseDown={ onContainerMouseDown }
-	// 		onMouseMove={ delayHiddenScrollBar }
-	// 	>
-	// 		<div
-	// 			ref={ thumbRef }
-	// 			style={ thumbStyles }
-	// 			className={ clsx(`${ prefixCls }-vertical-thumb`) }
-	// 			onMouseDown={ onThumbMouseDown }
-	// 		/>
-	// 	</div>
-	// )
 })
 
-export default ScrollBar
+export default HorizontalScrollBar

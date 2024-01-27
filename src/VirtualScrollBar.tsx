@@ -10,9 +10,9 @@ import raf from "./raf"
 import { useImmer } from "use-immer"
 import { Item } from "./components/Item"
 import useHeights from "./hooks/useHeights"
-import ScrollBar, { ScrollBarRef } from "./components/ScrollBar"
+import VerticalScrollBar from "./components/VerticalScrollBar"
 import { getSpinSize } from "./scrollUtil"
-import { ScrollOffset, ScrollState, VirtualScrollBarProps, VirtualScrollBarRef } from "./types"
+import { ScrollOffset, ScrollState, VirtualScrollBarProps, VirtualScrollBarRef, ScrollBarRef } from "./types"
 import useResizeObserver from "./hooks/useResizeObserver"
 import clsx from "clsx"
 import {
@@ -20,7 +20,6 @@ import {
 	renderTrackVerticalDefault,
 	renderThumbVerticalDefault
 } from "./defaultRenderElements"
-import "./VirtualScrollBar.less"
 
 const VirtualScrollBar = forwardRef<VirtualScrollBarRef, PropsWithChildren<VirtualScrollBarProps>>((props, ref) => {
 	const {
@@ -273,14 +272,13 @@ const VirtualScrollBar = forwardRef<VirtualScrollBarRef, PropsWithChildren<Virtu
 								className: clsx(`${ prefixCls }-wrapper`),
 								style: {transform: `translateY(${ fillerOffset }px)`}
 							}),
-							{
-							},
+							{},
 							listChildren
 						)
 					}
 				</div>
 			</div>
-			<ScrollBar
+			<VerticalScrollBar
 				prefixCls={ prefixCls }
 				ref={ verticalScrollBarInstance }
 				hidden={ scrollBarHidden }
@@ -288,8 +286,8 @@ const VirtualScrollBar = forwardRef<VirtualScrollBarRef, PropsWithChildren<Virtu
 					height: getSpinSize(scrollState.clientHeight, scrollHeight),
 					width: scrollBarSize
 				} }
-				renderTrack={renderTrackVertical}
-				renderThumb={renderThumbVertical}
+				renderTrack={ renderTrackVertical }
+				renderThumb={ renderThumbVertical }
 				autoHideTimeout={ scrollBarAutoHideTimeout }
 				scrollState={ scrollState }
 				scrollRange={ scrollHeight }

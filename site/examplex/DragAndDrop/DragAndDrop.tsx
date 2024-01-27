@@ -4,7 +4,7 @@ import React, {
 	useRef,
 	useState
 } from "react"
-import { VirtualScrollBar } from "../../../src"
+import VirtualScrollBar from "../../../src"
 import Sortable from "sortablejs"
 import "./index.less"
 

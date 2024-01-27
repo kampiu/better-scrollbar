@@ -3,10 +3,6 @@ import { join } from "path"
 import type { UserConfig } from "vite"
 import { defineConfig } from "vite"
 
-
-
-// const manualChunk
-
 /**
  * vite配置
  * https://vitejs.dev/config
