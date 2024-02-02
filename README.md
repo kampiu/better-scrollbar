@@ -22,13 +22,13 @@ import React, { Component } from "react"
 import ScrollBar from "better-scrollbar"
 
 class App extends Component {
-	render() {
-		return (
-			<ScrollBar style={{ width: 500, height: 300 }}>
-				<p>Some great content...</p>
-			</ScrollBar>
-		)
-	}
+  render() {
+    return (
+      <ScrollBar style={{ width: 500, height: 300 }}>
+        <p>Some great content...</p>
+      </ScrollBar>
+    )
+  }
 }
 ```
 
@@ -39,25 +39,25 @@ import React, { Component } from "react"
 import ScrollBar from "better-scrollbar"
 
 class CustomScrollBar extends Component {
-	render() {
-		return (
-			<ScrollBar
-				width={this.props.width}
-				height={this.props.height}
-				onScroll={this.handleScroll}
-				onScrollStart={this.handleScrollStart}
-				onScrollEnd={this.handleScrollEnd}
-				renderView={this.renderView}
-				renderTrackHorizontal={this.renderTrackHorizontal}
-				renderTrackVertical={this.renderTrackVertical}
-				renderThumbHorizontal={this.renderThumbHorizontal}
-				renderThumbVertical={this.renderThumbVertical}
-				scrollBarHidden
-				scrollBarAutoHideTimeout={1000}
-				{...this.props}
-			/>
-		)
-	}
+  render() {
+    return (
+      <ScrollBar
+        width={this.props.width}
+        height={this.props.height}
+        onScroll={this.handleScroll}
+        onScrollStart={this.handleScrollStart}
+        onScrollEnd={this.handleScrollEnd}
+        renderView={this.renderView}
+        renderTrackHorizontal={this.renderTrackHorizontal}
+        renderTrackVertical={this.renderTrackVertical}
+        renderThumbHorizontal={this.renderThumbHorizontal}
+        renderThumbVertical={this.renderThumbVertical}
+        scrollBarHidden
+        scrollBarAutoHideTimeout={1000}
+        {...this.props}
+      />
+    )
+  }
 }
 ```
 
