@@ -202,11 +202,11 @@ const VirtualScrollBar = forwardRef<VirtualScrollBarRef, PropsWithChildren<Virtu
 				})
 			})
 		}
-		
-		scrollContainerRef.current?.addEventListener("wheel", onScroll)
+		const scrollContainer = scrollContainerRef.current;
+		scrollContainer?.addEventListener("wheel", onScroll)
 		return () => {
+			scrollContainer?.removeEventListener("wheel", onScroll)
 			raf.cancel(wheelingRaf.current)
-			scrollContainerRef.current?.removeEventListener("wheel", onScroll)
 		}
 	}, [])
 	

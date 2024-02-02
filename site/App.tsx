@@ -5,8 +5,8 @@ import "../src/styles/index.less"
 
 function App() {
 	return (
-		<div className={styles.layout}>
-			<DemoA />
+		<div className={ styles.layout }>
+			<DemoA/>
 		</div>
 	)
 }

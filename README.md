@@ -1,6 +1,8 @@
 # better-scrollbar
 
-Highly customizable, high-performance virtual list for big data rendering
+Highly customizable, high-performance virtual list for big data rendering.
+
+Feel free to provide feedback if there are any issues, and promptly synchronize problem handling.
 
 ## Installation
 ```bash
@@ -11,7 +13,7 @@ npm install better-scrollbar --save
 
 ```javascript
 import React, { Component } from "react"
-import ScrollBar from 'better-scrollbar';
+import ScrollBar from "better-scrollbar"
 
 class App extends Component {
 	render() {
@@ -19,7 +21,7 @@ class App extends Component {
 			<ScrollBar style={{ width: 500, height: 300 }}>
 				<p>Some great content...</p>
 			</ScrollBar>
-		);
+		)
 	}
 }
 ```
@@ -48,7 +50,7 @@ class CustomScrollBar extends Component {
 				scrollBarAutoHideTimeout={1000}
 				{...this.props}
 			/>
-		);
+		)
 	}
 }
 ```

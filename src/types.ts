@@ -1,4 +1,4 @@
-import { HTMLProps, PropsWithChildren, ReactElement } from "react"
+import type { HTMLProps, PropsWithChildren, ReactElement } from "react"
 
 /** 滚动状态 */
 export interface ScrollState {
