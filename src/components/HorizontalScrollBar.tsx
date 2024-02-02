@@ -5,7 +5,7 @@ import React, {
 	useEffect,
 	useRef,
 	useImperativeHandle,
-	cloneElement
+	cloneElement, useLayoutEffect
 } from "react"
 import raf from "../raf"
 import clsx from "clsx"
@@ -54,8 +54,9 @@ const HorizontalScrollBar = forwardRef<ScrollBarRef, ScrollBarProps>((props, ref
 		}, autoHideTimeout)
 	}, [])
 	
-	useEffect(() => {
+	useLayoutEffect(() => {
 		delayHiddenScrollBar()
+		return () => clearTimeout(visibleTimeoutRef.current)
 	}, [scrollState.y])
 	
 	// ====================== Container =======================

@@ -53,7 +53,8 @@
 		"site",
 		".prettierrc.js",
 		"babel.config.js",
-		"types/*.ts"
+		"types/*.ts",
+		"test"
 	],
 	"exclude": [
 		"node_modules",
