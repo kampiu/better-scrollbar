@@ -29,7 +29,7 @@
 		"build": "father build",
 		"site:build": "tsc && vite build",
 		"site:dev": "vite",
-		"test": "jest --config jest.config.js --no-cache -i",
+		"test": "jest --config jest.config.js --no-cache -i --coverage",
 		"test:dev": "jest --config jest.config.js --no-cache --watchAll",
 		"test:update": "jest --config jest.config.js --no-cache -u"
 	},
