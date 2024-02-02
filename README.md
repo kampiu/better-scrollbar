@@ -1,5 +1,11 @@
 # better-scrollbar
 
+![NPM License](https://img.shields.io/npm/l/better-scrollbar)
+![NPM Version](https://img.shields.io/npm/v/better-scrollbar)
+
+
+
+
 Highly customizable, high-performance virtual list for big data rendering.
 
 Feel free to provide feedback if there are any issues, and promptly synchronize problem handling.

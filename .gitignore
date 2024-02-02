@@ -16,6 +16,5 @@ sketch
 lib
 es
 dist
-coverage
 .idea
 .npmrc
