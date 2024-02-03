@@ -21,7 +21,7 @@ import {
 	renderThumbVerticalDefault
 } from "./defaultRenderElements"
 
-const VirtualScrollBar = forwardRef<VirtualScrollBarRef, PropsWithChildren<VirtualScrollBarProps>>((props, ref) => {
+const ScrollBar = forwardRef<VirtualScrollBarRef, PropsWithChildren<VirtualScrollBarProps>>((props, ref) => {
 	const {
 		onScrollStart,
 		onScrollEnd,
@@ -298,4 +298,4 @@ const VirtualScrollBar = forwardRef<VirtualScrollBarRef, PropsWithChildren<Virtu
 	)
 })
 
-export default VirtualScrollBar
+export { ScrollBar }

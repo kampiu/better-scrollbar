@@ -1,4 +1,5 @@
-import VirtualScrollBar from "./VirtualScrollBar"
+import { ScrollBar } from "./ScrollBar"
 
+export { ScrollBar }
 export type { ScrollState, RenderElement, VirtualScrollBarProps, VirtualScrollBarRef } from "./types"
-export default VirtualScrollBar
+export default ScrollBar
