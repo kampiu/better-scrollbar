@@ -36,6 +36,9 @@ jobs:
       - name: Run unit tests
         run: npm run test
 
+      - name: Coveralls
+        uses: coverallsapp/github-action@v2
+
       - name: build dist and bundle analyzer report
         run: npm run site:build
         env:
