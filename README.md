@@ -2,7 +2,7 @@
 
 ![NPM License](https://img.shields.io/npm/l/better-scrollbar)
 ![NPM Version](https://img.shields.io/npm/v/better-scrollbar)
-[![Coverage Status](https://coveralls.io/repos/github/kampiu/better-scrollbar/badge.svg?branch=release)](https://coveralls.io/github/kampiu/better-scrollbar?branch=release)
+[![Coverage Status](https://coveralls.io/repos/github/kampiu/better-scrollbar/badge.svg?branch=master)](https://coveralls.io/github/kampiu/better-scrollbar?branch=master)
 
 Highly customizable, high-performance virtual list for big data rendering.
 
