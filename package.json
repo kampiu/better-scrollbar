@@ -29,9 +29,10 @@
 		"build": "father build",
 		"site:build": "tsc && vite build",
 		"site:dev": "vite",
-		"test": "jest --config jest.config.js --no-cache -i --coverage",
+		"test": "jest --config jest.config.js --no-cache -i --coverage && npm run coverage",
 		"test:dev": "jest --config jest.config.js --no-cache --watchAll",
-		"test:update": "jest --config jest.config.js --no-cache -u"
+		"test:update": "jest --config jest.config.js --no-cache -u",
+		"coverage": "cat ./coverage/lcov.info | coveralls"
 	},
 	"devDependencies": {
 		"@babel/preset-env": "^7.23.5",
@@ -57,6 +58,7 @@
 		"@vitejs/plugin-react": "^4.2.0",
 		"babel-plugin-jsx-remove-data-test-id": "^3.0.0",
 		"clsx": "^2.1.0",
+		"coveralls": "^3.1.1",
 		"dom-css": "^2.1.0",
 		"enzyme": "^3.11.0",
 		"enzyme-adapter-react-16": "^1.15.7",
