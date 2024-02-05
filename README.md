@@ -18,6 +18,7 @@ npm install better-scrollbar --save
 ```javascript
 import React, { Component } from "react"
 import ScrollBar from "better-scrollbar"
+import "better-scrollbar/dist/BetterScrollbar.min.css"
 
 class App extends Component {
   render() {
@@ -30,11 +31,12 @@ class App extends Component {
 }
 ```
 
-The `<Scrollbars>` component is completely customizable. Check out the following code:
+The `<ScrollBar>` component is completely customizable. Check out the following code:
 
 ```javascript
 import React, { Component } from "react"
 import ScrollBar from "better-scrollbar"
+import "better-scrollbar/dist/BetterScrollbar.min.css"
 
 class CustomScrollBar extends Component {
   render() {
@@ -58,6 +60,42 @@ class CustomScrollBar extends Component {
   }
 }
 ```
+
+### If you are a tree level structure, you can use the following code:
+
+```tsx
+import React from "react"
+import ScrollBar from "better-scrollbar"
+import "better-scrollbar/dist/BetterScrollbar.min.css"
+
+interface Node {
+	id: string
+	name: string
+	next?: Array<Node>
+}
+
+const renderList = (props: Node): Array<JSX.Element> => {
+	const component = <div>{props.name}</div>
+	const nodesList = [component]
+	
+	if (props?.next && props?.next) {
+		props?.next?.map((node) => nodesList.push(...renderList(node)))
+	}
+	return nodesList
+}
+
+export default () => {
+	const tree: Node = { id: "1", name: "demo" }
+	return (
+		<div>
+			<ScrollBar width={500} height={200}>
+				{renderList(tree)}
+			</ScrollBar>
+		</div>
+	)
+}
+
+````
 
 ## Examples
 
